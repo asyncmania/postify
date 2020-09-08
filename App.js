@@ -1,8 +1,9 @@
-import React, { useState } from 'react'
+import React, { useState, useReducer, useEffect } from 'react'
 
 import UserBar from './user/UserBar'
 import PostList from './post/PostList'
 import CreatePost from './post/CreatePost'
+import appReducer from './reducers'
 
 const defaultPosts = [
     { title: 'React Hooks', content: 'The greatest thing since sliced bread!', author: 'Daniel Bugl' },
@@ -10,14 +11,26 @@ const defaultPosts = [
 ]
 
 export default function App() {
-  const [user, setUser] = useState('')
-  const [posts, setPosts] =  useState(defaultPosts)
+ const [state, dispatch] = useReducer(appReducer, {user: '', posts: defaultPosts})
+ const {user, posts } = state
+
+ useEffect(() => {
+   if(user) {
+     document.title = `${user} - React Hook Blog`
+   }else {
+     document.title = 'React Hooks Blog'
+   }
+ }, [user])
+
+
  return(
    <div style={{ padding: 8}}>
-     <UserBar user={user} setUser={setUser} />
+     <UserBar user={user} dispatch={dispatch} />
      <br />
-    {user && <CreatePost user={user} posts={posts} setPosts={setPosts} />} 
+    {user && <CreatePost user={user} posts={posts} dispatch={dispatch} />} 
      <PostList posts={posts} />
    </div>
  )
 }
+
+
